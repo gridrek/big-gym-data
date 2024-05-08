@@ -1,16 +1,23 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 data_csv = "gym_sensor_data_2023-04-02_to_2023-04-09.csv"
 
-# Use comma as the delimiter since your CSV is comma-separated
+# Read the CSV data
 data = pd.read_csv(data_csv)
 
-print(data.head(n=10))
-
-# Assuming 'timestamp' column needs to be parsed as datetime
+# Convert 'timestamp' column to datetime and set it as the index
 data['timestamp'] = pd.to_datetime(data['timestamp'])
+data.set_index('timestamp', inplace=True)
 
-# Now you can plot your data
-data.plot(x="timestamp", y="machine_1", title="Machine 1 Usage Over Time")
+# Resample data by hour and aggregate using sum
+data_resampled = data.resample('H').sum()
+
+# Display the first few rows of the hourly resampled data
+print(data_resampled.head(n=10))
+
+# Plot resampled data (example with machine_1)
+data_resampled.plot(y='machine_1', title='Machine 1 Usage per Hour')
+plt.xlabel('Time (hours)')
+plt.ylabel('Usage')
 plt.show()
